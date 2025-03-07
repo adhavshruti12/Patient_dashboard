@@ -4,8 +4,6 @@ import Sidebar from './components/Sidebar'
 import Navbar from './components/Navbar'
 import Dashboard from './pages/Dashboard'
 import AppointmentBooking from "./pages/AppointmentBooking"; 
-import PatientRegistration from './pages/PatientRegistration'
-
 
 
 function App() {
