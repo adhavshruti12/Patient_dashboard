@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const AppointmentBooking = () => {
+const AppointmentBooking = ({ darkMode }) => {
   const [appointment, setAppointment] = useState({
     firstName: "",
     lastName: "",
@@ -57,13 +57,18 @@ const AppointmentBooking = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen h-screen w-full bg-[#D0F8F3] fixed top-0 left-0">
-      
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-2/3 max-w-2xl">
-        <h2 className="text-2xl font-semibold text-center mb-6 text-gray-700">
-          {appointment.booked ? "Appointment Details" : "Book an Appointment"}
-        </h2>
-
+    <div
+    className={`flex justify-center items-center min-h-screen h-screen w-full fixed top-0 left-0 transition-all 
+        ${darkMode ? "bg-gray-900 text-white" : "bg-white text-gray-700"}`}
+  >
+    <div
+      className={`p-8 rounded-2xl shadow-lg w-2/3 max-w-2xl transition-all 
+          ${darkMode ? "bg-gray-800 text-white" : "bg-white text-gray-700"}`}
+    >
+      <h2 className="text-2xl font-semibold text-center mb-6">
+        {appointment.booked ? "Appointment Details" : "Book an Appointment"}
+      </h2>
+  
         {!appointment.booked ? (
           <>
             {/* First Name & Last Name */}
@@ -76,7 +81,9 @@ const AppointmentBooking = () => {
                   type="text"
                   name="firstName"
                   placeholder="Enter First Name"
-                  className="border p-3 rounded-lg w-full focus:ring-2 focus:ring-[#64CCC5]"
+                  className={`border p-3 rounded-lg w-full focus:ring-2 focus:ring-[#64CCC5] ${
+                    darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-black border-gray-300"
+                  }`}
                   onChange={handleChange}
                 />
               </div>
@@ -88,12 +95,14 @@ const AppointmentBooking = () => {
                   type="text"
                   name="lastName"
                   placeholder="Enter Last Name"
-                  className="border p-3 rounded-lg w-full focus:ring-2 focus:ring-[#64CCC5]"
+                  className={`border p-3 rounded-lg w-full focus:ring-2 focus:ring-[#64CCC5] ${
+                    darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-black border-gray-300"
+                  }`}
                   onChange={handleChange}
                 />
               </div>
             </div>
-
+  
             {/* Mobile Number */}
             <div className="mt-4">
               <label className="block text-gray-600 text-sm font-medium mb-1">
@@ -103,11 +112,13 @@ const AppointmentBooking = () => {
                 type="text"
                 name="mobile"
                 placeholder="Enter Mobile Number"
-                className="border p-3 rounded-lg w-full focus:ring-2 focus:ring-[#64CCC5]"
+                className={`border p-3 rounded-lg w-full focus:ring-2 focus:ring-[#64CCC5] ${
+                  darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-black border-gray-300"
+                }`}
                 onChange={handleChange}
               />
             </div>
-
+  
             {/* Email */}
             <div className="mt-4">
               <label className="block text-gray-600 text-sm font-medium mb-1">
@@ -117,77 +128,64 @@ const AppointmentBooking = () => {
                 type="email"
                 name="email"
                 placeholder="Enter Email"
-                className="border p-3 rounded-lg w-full focus:ring-2 focus:ring-[#64CCC5]"
+                className={`border p-3 rounded-lg w-full focus:ring-2 focus:ring-[#64CCC5] ${
+                  darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-black border-gray-300"
+                }`}
                 onChange={handleChange}
               />
             </div>
-
-            {/* Date of Birth & Gender */}
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              <div>
-                <label className="block text-gray-600 text-sm font-medium mb-1">
-                  Date of Birth
-                </label>
-                <input
-                  type="date"
-                  name="birthDate"
-                  className="border p-3 rounded-lg w-full focus:ring-2 focus:ring-[#64CCC5]"
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <label className="block text-gray-600 text-sm font-medium mb-1">
-                  Gender
-                </label>
-                <select
-                  name="gender"
-                  className="border p-3 rounded-lg w-full focus:ring-2 focus:ring-[#64CCC5]"
-                  onChange={handleChange}
-                >
-                  <option value="">Select Gender</option>
-                  {genders.map((gender) => (
-                    <option key={gender} value={gender}>
-                      {gender}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            {/* Address */}
+  
+            {/* Gender Selection */}
             <div className="mt-4">
-              <label className="block text-gray-600 text-sm font-medium mb-1">
-                Address
-              </label>
+              <label className="block text-gray-600 text-sm font-medium mb-1">Gender</label>
+              <select
+                name="gender"
+                className={`border p-3 rounded-lg w-full focus:ring-2 focus:ring-[#64CCC5] ${
+                  darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-black border-gray-300"
+                }`}
+                onChange={handleChange}
+              >
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+  
+            {/* Age Input */}
+            <div className="mt-4">
+              <label className="block text-gray-600 text-sm font-medium mb-1">Age</label>
               <input
-                type="text"
-                name="address"
-                placeholder="Enter Address"
-                className="border p-3 rounded-lg w-full focus:ring-2 focus:ring-[#64CCC5]"
+                type="number"
+                name="age"
+                placeholder="Enter Age"
+                className={`border p-3 rounded-lg w-full focus:ring-2 focus:ring-[#64CCC5] ${
+                  darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-black border-gray-300"
+                }`}
                 onChange={handleChange}
               />
             </div>
-
+  
             {/* Appointment Date & Time */}
             <div className="grid grid-cols-2 gap-4 mt-4">
               <div>
-                <label className="block text-gray-600 text-sm font-medium mb-1">
-                  Appointment Date
-                </label>
+                <label className="block text-gray-600 text-sm font-medium mb-1">Appointment Date</label>
                 <input
                   type="date"
                   name="date"
-                  className="border p-3 rounded-lg w-full focus:ring-2 focus:ring-[#64CCC5]"
+                  className={`border p-3 rounded-lg w-full focus:ring-2 focus:ring-[#64CCC5] ${
+                    darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-black border-gray-300"
+                  }`}
                   onChange={handleChange}
                 />
               </div>
               <div>
-                <label className="block text-gray-600 text-sm font-medium mb-1">
-                  Appointment Time
-                </label>
+                <label className="block text-gray-600 text-sm font-medium mb-1">Appointment Time</label>
                 <select
                   name="time"
-                  className="border p-3 rounded-lg w-full focus:ring-2 focus:ring-[#64CCC5]"
+                  className={`border p-3 rounded-lg w-full focus:ring-2 focus:ring-[#64CCC5] ${
+                    darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-black border-gray-300"
+                  }`}
                   onChange={handleChange}
                 >
                   <option value="">Select Time</option>
@@ -199,15 +197,15 @@ const AppointmentBooking = () => {
                 </select>
               </div>
             </div>
-
+  
             {/* Select Department */}
             <div className="mt-4">
-              <label className="block text-gray-600 text-sm font-medium mb-1">
-                Select Department
-              </label>
+              <label className="block text-gray-600 text-sm font-medium mb-1">Select Department</label>
               <select
                 name="department"
-                className="border p-3 rounded-lg w-full focus:ring-2 focus:ring-[#64CCC5]"
+                className={`border p-3 rounded-lg w-full focus:ring-2 focus:ring-[#64CCC5] ${
+                  darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-black border-gray-300"
+                }`}
                 onChange={handleChange}
               >
                 <option value="">Choose a Department</option>
@@ -218,15 +216,15 @@ const AppointmentBooking = () => {
                 ))}
               </select>
             </div>
-
+  
             {/* Select Doctor */}
             <div className="mt-4">
-              <label className="block text-gray-600 text-sm font-medium mb-1">
-                Select Doctor
-              </label>
+              <label className="block text-gray-600 text-sm font-medium mb-1">Select Doctor</label>
               <select
                 name="doctor"
-                className="border p-3 rounded-lg w-full focus:ring-2 focus:ring-[#64CCC5]"
+                className={`border p-3 rounded-lg w-full focus:ring-2 focus:ring-[#64CCC5] ${
+                  darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-white text-black border-gray-300"
+                }`}
                 onChange={handleChange}
                 disabled={!appointment.department}
               >
@@ -239,21 +237,20 @@ const AppointmentBooking = () => {
                   ))}
               </select>
             </div>
-            {/* Have You Visited Before Checkbox */}
+
+            {/* Have You Visited Before? Checkbox */}
             <div className="mt-4 flex items-center">
               <input
                 type="checkbox"
                 name="visitedBefore"
-                className="w-5 h-5 text-[#64CCC5] border-gray-300 rounded focus:ring-[#64CCC5]"
-                onChange={(e) =>
-                  setAppointment({ ...appointment, visitedBefore: e.target.checked })
-                }
+                id="visitedBefore"
+                className="mr-2 w-5 h-5 accent-[#64CCC5]"
+                onChange={handleChange}
               />
-              <label className="ml-2 text-gray-600 text-sm font-medium">
+              <label htmlFor="visitedBefore" className="text-gray-600 text-sm font-medium">
                 Have you visited before?
               </label>
             </div>
-
 
             {/* Book Appointment Button */}
             <button
@@ -265,26 +262,13 @@ const AppointmentBooking = () => {
           </>
         ) : (
           <div className="text-center">
-            <p className="text-lg font-semibold text-gray-600">
-              Appointment Scheduled Successfully!
-            </p>
-            <button
-              onClick={handleReschedule}
-              className="w-full bg-[#64CCC5] hover:bg-[#4DA9A5] text-white font-bold py-3 px-4 rounded-xl mt-6"
-            >
-              RESCHEDULE APPOINTMENT
-            </button>
-            <button
-              onClick={handleCancel}
-              className="w-full bg-[#64CCC5] hover:bg-[#4DA9A5] text-white font-bold py-3 px-4 rounded-xl mt-6"
-            >
-              CANCEL APPOINTMENT
-            </button>
+            <p className="text-lg font-semibold text-gray-600">Appointment Scheduled Successfully!</p>
           </div>
         )}
       </div>
     </div>
   );
+  
 };
 
 export default AppointmentBooking;
