@@ -5,7 +5,6 @@ import Navbar from './components/Navbar'
 import Dashboard from './pages/Dashboard'
 import AppointmentBooking from "./pages/AppointmentBooking"; 
 
-
 function App() {
   const [darkMode, setDarkMode] = useState(false)
 
@@ -28,8 +27,6 @@ function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/" element={<Dashboard />} />
               <Route path="/appointments" element={<AppointmentBooking darkMode={darkMode} />} />
-
-
             </Routes>
           </main>
         </div>
