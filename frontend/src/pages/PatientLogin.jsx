@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 
-const Login = () => {
+const PatientLogin = () => {
   const [formData, setFormData] = useState({ username: "", password: "" });
 
   const handleChange = (e) => {
@@ -64,4 +64,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default PatientLogin;
