@@ -1,18 +1,35 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import Sidebar from './components/Sidebar'
+import Navbar from './components/Navbar'
+import Dashboard from './pages/Dashboard'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [darkMode, setDarkMode] = useState(false)
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode)
+  }
 
   return (
-    <>
-      <div>
-       
+    <Router>
+      <div className={`flex h-screen ${darkMode ? 'dark' : ''}`}>
+        <Sidebar />
+        <div className="flex flex-col flex-1 overflow-hidden">
+          <Navbar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+          <main className="flex-1 overflow-y-auto bg-neutral-lightest dark:bg-dark-dark p-4">
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/" element={<Dashboard />} />
+            </Routes>
+          </main>
+        </div>
       </div>
-
-    </>
+    </Router>
   )
 }
 
