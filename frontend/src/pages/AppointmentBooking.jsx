@@ -6,7 +6,6 @@ const AppointmentBooking = ({ darkMode }) => {
     lastName: "",
     mobile: "",
     email: "",
-    birthDate: "",
     gender: "",
     address: "",
     date: "",
