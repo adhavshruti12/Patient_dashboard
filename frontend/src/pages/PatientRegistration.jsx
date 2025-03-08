@@ -2,7 +2,8 @@ import { useState, useCallback, useRef } from "react";
 import { User, Phone, Mail, Home,Eye, HeartPulse, FileText, ChevronLeft, ChevronRight, AlertTriangle, Upload } from "lucide-react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer } from "react-toastify";
+
+const BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;;
 
 
 const Input = ({ label, name, type = "text", icon: Icon, value, onChange }) => {
@@ -51,27 +52,27 @@ const Button = ({ children, onClick, className = "" }) =>
 };
 
 
-const PatientRegistration = () => {
+const NewRegistration = () => {
   const [submitCount, setSubmitCount] = useState(0);
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    fullName: "",
-    dob: "",
-    gender: "",
-    bloodGroup: "",
-    maritalStatus: "",
-    phone: "",
-    email: "",
-    password: "",
-    address: "",
-    emergencyContactName: "",
-    emergencyContactRelation: "",
-    emergencyContactNumber: "",
-    medicalConditions: "",
-    pastSurgeries: "",
-    medications: "",
-    allergies: "",
-    disabilities: "",
+    patient_fullName: "",
+    patient_dob: "",
+    patient_gender: "",
+    patient_bloodGroup: "",
+    patient_maritalStatus: "",
+    patient_phone: "",
+    patient_email: "",
+    patient_password: "",
+    patient_address: "",
+    patient_emergencyContactName: "",
+    patient_emergencyContactRelation: "",
+    patient_emergencyContactNumber: "",
+    patient_medicalConditions: "",
+    patient_pastSurgeries: "",
+    patient_medications: "",
+    patient_allergies: "",
+    patient_disabilities: "",
   });
 
   const [medicalReportFile, setMedicalReportFile] = useState(null); // Store selected file
@@ -85,46 +86,119 @@ const PatientRegistration = () => {
   }, []);
 
   const handleFileUpload = (e) => {
-    setMedicalReportFile([...e.target.files]); // Store all selected files in state
+    const files = [...e.target.files];
+    const allowedTypes = ["image/jpeg", "image/png"];
+    
+    const validFiles = files.filter(file => allowedTypes.includes(file.type));
+  
+    if (validFiles.length !== files.length) {
+      toast.error("Only JPG and PNG files are allowed!", { position: "top-right" });
+      return;
+    }
+  
+    setMedicalReportFile(validFiles);
   };
   
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (step === 4 && submitCount === 1) {
-      if (Object.values(formData).every((field) => field.trim() !== "")) {
-        const data = new FormData();
-
-        // Append all form fields
-        for (let key in formData) {
-          data.append(key, formData[key]);
-        }
-
-        // Append file if available
-        if (medicalReportFile) {
-          data.append("medicalReport", medicalReportFile);
-        }
-
-        
-      
-
-   setSubmitCount();
-
-   toast.success("Registration Successful",{position: "top-right" });
+      const { patient_email, patient_password,patient_phone,patient_emergencyContactNumber } = formData;
   
-      }else {
-        toast.error("Please fill in all fields!", { position: "top-right" });
-        // alert("Please fill in all fields before submitting.");
+      // Email validation regex
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(patient_email)) {
+        setSubmitCount(0);
+        toast.error("Invalid email format!", { position: "top-right" });
+        return;
       }
-      
-  };
   
-}
+      // Password validation regex
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
+      if (!passwordRegex.test(patient_password)) {
+        setSubmitCount(0);
+        toast.error("Password must have at least 8 characters, 1 uppercase, 1 lowercase, 1 number, and 1 special character!", { position: "top-right" });
+        return;
+      }
+
+      const mobileRegex =  /^[6-9]\d{9}$/;
+      if (!mobileRegex.test(patient_phone)) {
+        setSubmitCount(0);
+        toast.error("Invalid patient mobile number!", { position: "top-right" });
+        return;
+      }
+
+      if (!mobileRegex.test(patient_emergencyContactNumber)) {
+        setSubmitCount(0);
+        toast.error("Invalid emergerncy mobile number!", { position: "top-right" });
+        return;
+      }
+
+
+     
+  
+      // Ensure all fields are filled
+      if (Object.values(formData).some(field => field.trim() === "")) {
+       
+        toast.error("Please fill in all fields!", { position: "top-right" });
+        return;
+      }
+  
+      const data = new FormData();
+  
+      // Append all form fields
+      for (let key in formData) {
+        data.append(key, formData[key]);
+      }
+  
+      // Append file if available
+      if (medicalReportFile && medicalReportFile.length > 0) {
+        medicalReportFile.forEach(file => data.append("patient_prevMedicalReports", file));
+      }
+  
+      try {
+        const response = await fetch(`${BASE_URL}/api/auth/patientRegister`, {
+          method: "POST",
+          body: data,
+        });
+  
+        const result = await response.json();
+  
+        if (response.ok) {
+          toast.success("Registration Successful", { position: "top-right" });
+          setSubmitCount(0);
+          setFormData({
+            patient_fullName: "",
+            patient_dob: "",
+            patient_gender: "",
+            patient_bloodGroup: "",
+            patient_maritalStatus: "",
+            patient_phone: "",
+            patient_email: "",
+            patient_password: "",
+            patient_address: "",
+            patient_emergencyContactName: "",
+            patient_emergencyContactRelation: "",
+            patient_emergencyContactNumber: "",
+            patient_medicalConditions: "",
+            patient_pastSurgeries: "",
+            patient_medications: "",
+            patient_allergies: "",
+            patient_disabilities: "",
+          });
+          setMedicalReportFile(null);
+        } else {
+          toast.error(result.message || "Registration failed", { position: "top-right" });
+        }
+      } catch (error) {
+        toast.error("Something went wrong!", { position: "top-right" });
+      }
+    }
+  };
 
 
   return (
-    <>
     <div className="h-screen bg-[#a9e9e6] flex justify-center items-center " >
     <div className="h-auto w-full bg-[#a9e9e6] bg-opacity-90 flex  items-center justify-center">
       <div className="p-8 max-w-xl mx-auto bg-white shadow-lg rounded-xl border border-[#66D2CE]">
@@ -155,34 +229,34 @@ const PatientRegistration = () => {
       </div>
 
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} enctype="multipart/form-data">
           {step === 1 && (
             <>
               {/* <h3 className="text-lg font-semibold text-gray-700 mb-4">Personal Information</h3> */}
-              <Input label="Full Name" name="fullName" icon={User} value={formData.fullName} onChange={handleChange} />
-              <Input label="Date of Birth" name="dob" type="date" icon={User} value={formData.dob} onChange={handleChange} />
-              <Dropdown label="Gender" name="gender" options={["Male", "Female", "Other"]} icon={User} value={formData.gender} onChange={handleChange} />
-              <Dropdown label="Blood Group" name="bloodGroup" options={["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"]} icon={HeartPulse} value={formData.bloodGroup} onChange={handleChange} />
-              <Dropdown label="Marital Status" name="maritalStatus" options={["Single", "Married", "Divorced", "Widowed"]} icon={User} value={formData.maritalStatus} onChange={handleChange} />
+              <Input label="Full Name *" name="patient_fullName" icon={User} value={formData.patient_fullName} onChange={handleChange} />
+              <Input label="Date of Birth" name="patient_dob" type="date" icon={User} value={formData.patient_dob} onChange={handleChange} />
+              <Dropdown label="Gender *" name="patient_gender" options={["Male", "Female", "Other"]} icon={User} value={formData.patient_gender} onChange={handleChange} />
+              <Dropdown label="Blood Group *" name="patient_bloodGroup" options={["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"]} icon={HeartPulse} value={formData.patient_bloodGroup} onChange={handleChange} />
+              <Dropdown label="Marital Status *" name="patient_maritalStatus" options={["Single", "Married", "Divorced", "Widowed"]} icon={User} value={formData.patient_maritalStatus} onChange={handleChange} />
             </>
           )}
 
           {step === 2 && (
             <>
               {/* <h3 className="text-lg font-semibold text-gray-700 mb-4">Contact Details</h3> */}
-              <Input label="Phone Number" name="phone" type="tel" icon={Phone} value={formData.phone} onChange={handleChange} />
-              <Input label="Email Address" name="email" type="email" icon={Mail} value={formData.email} onChange={handleChange} />
-              <Input label="Password" name="password" type="password" icon={Eye} value={formData.password} onChange={handleChange} />
-              <Input label="Address" name="address" icon={Home} value={formData.address} onChange={handleChange} />
+              <Input label="Phone Number *" name="patient_phone" type="tel" icon={Phone} value={formData.patient_phone} onChange={handleChange} />
+              <Input label="Email Address *" name="patient_email" type="email" icon={Mail} value={formData.patient_email} onChange={handleChange} />
+              <Input label="Password *" name="patient_password" type="password" icon={Eye} value={formData.patient_password} onChange={handleChange} />
+              <Input label="Address *" name="patient_address" icon={Home} value={formData.patient_address} onChange={handleChange} />
             </>
           )}
 
           {step === 3 && (
             <>
               {/* <h3 className="text-lg font-semibold text-gray-700 mb-4">Emergency Contact</h3> */}
-              <Input label="Emergency Contact Name" name="emergencyContactName" icon={User} value={formData.emergencyContactName} onChange={handleChange} />
-              <Dropdown label="Relation" name="emergencyContactRelation" options={["Parent", "Sibling", "Spouse", "Friend", "Other"]} icon={User} value={formData.emergencyContactRelation} onChange={handleChange} />
-              <Input label="Emergency Contact Number" name="emergencyContactNumber" type="tel" icon={Phone} value={formData.emergencyContactNumber} onChange={handleChange} />
+              <Input label="Emergency Contact Name *" name="patient_emergencyContactName" icon={User} value={formData.patient_emergencyContactName} onChange={handleChange} />
+              <Dropdown label="Relation *" name="patient_emergencyContactRelation" options={["Parent", "Sibling", "Spouse", "Friend", "Other"]} icon={User} value={formData.patient_emergencyContactRelation} onChange={handleChange} />
+              <Input label="Emergency Contact Number *" name="patient_emergencyContactNumber" type="tel" icon={Phone} value={formData.patient_emergencyContactNumber} onChange={handleChange} />
             </>
           )}
 
@@ -190,20 +264,20 @@ const PatientRegistration = () => {
             <>
               {/* <h3 className="text-lg font-semibold text-gray-700 mb-4">Medical History</h3> */}
               <div className="grid grid-cols-2 gap-2">
-              <Input label="Medical Conditions" name="medicalConditions" icon={FileText} value={formData.medicalConditions} onChange={handleChange} />
-              <Input label="Past Surgeries" name="pastSurgeries" icon={FileText} value={formData.pastSurgeries} onChange={handleChange} />
-              <Input label="Medications" name="medications" icon={FileText} value={formData.medications} onChange={handleChange} />
-              <Input label="Allergies" name="allergies" icon={AlertTriangle} value={formData.allergies} onChange={handleChange} />
-              <Input label="Disabilities" name="disabilities" icon={AlertTriangle} value={formData.disabilities} onChange={handleChange} />
+              <Input label="Medical Conditions *" name="patient_medicalConditions" icon={FileText} value={formData.patient_medicalConditions} onChange={handleChange} />
+              <Input label="Past Surgeries *" name="patient_pastSurgeries" icon={FileText} value={formData.patient_pastSurgeries} onChange={handleChange} />
+              <Input label="Medications *" name="patient_medications" icon={FileText} value={formData.patient_medications} onChange={handleChange} />
+              <Input label="Allergies *" name="patient_allergies" icon={AlertTriangle} value={formData.patient_allergies} onChange={handleChange} />
+              <Input label="Disabilities *" name="patient_disabilities" icon={AlertTriangle} value={formData.patient_disabilities} onChange={handleChange} />
               
-              <div className="mb-4 flex items-center bg-white  rounded-lg border border-[#66D2CE] p-2">
+              <div className="mb-4 flex items-center bg-white  rounded-lg border border-[#66D2CE] p-2 overflow-hidden">
              
               <label 
-                  htmlFor="medicalReports" 
+                  htmlFor="patient_prevMedicalReports" 
                   className="cursor-pointer bg-white  py-2 rounded-md flex items-center  "
                 >
                   <FileText className="text-[#66D2CE] w-5 h-5 mx-3" />
-                  <span className={`w-full p-2 focus:outline-none  ${medicalReportFile && medicalReportFile.length>0? "text-black":"text-gray-500"}`}>{medicalReportFile&&medicalReportFile.length > 0 
+                  <span className={`w-full p-2 focus:outline-none overflow-hidden ${medicalReportFile && medicalReportFile.length>0? "text-black":"text-gray-500"}`}>{medicalReportFile && medicalReportFile.length > 0 
                     ? medicalReportFile.map((file) => file.name).join(", ") 
                     : "Upload Previous Reports"}
                   </span>
@@ -211,9 +285,9 @@ const PatientRegistration = () => {
   
               <input
               
-                id="medicalReports"
+                id="patient_prevMedicalReports"
                 type="file" 
-                name="medicalReports" 
+                name="patient_prevMedicalReports" 
                 accept=".pdf,.jpg,.png" 
                 className="hidden" 
                 multiple
@@ -256,8 +330,6 @@ const PatientRegistration = () => {
       </div>
     </div>
     </div>
-    <ToastContainer/>
-   </>
   );
 };
 
