@@ -3,54 +3,22 @@ import { User, Lock } from "lucide-react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
-const BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
 
 const Login = () => {
-  const [formData, setFormData] = useState({ patient_username: "", patient_password: "" });
+  const [formData, setFormData] = useState({ username: "", password: "" });
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-  
-    if (!formData.patient_username || !formData.patient_password) {
+    if (formData.username && formData.password) {
+      toast.success("Login Successful!", { position: "top-right" });
+    } else {
       toast.error("Please enter username and password!", { position: "top-right" });
-      return;
-    }
-  
-    try {
-      const response = await fetch(`${BASE_URL}/api/auth/patientLogin`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          patient_email: formData.patient_username,
-          patient_password: formData.patient_password,
-        }),
-      });
-  
-      const data = await response.json();
-  
-      if (response.ok) {
-        toast.success("Login Successful!", { position: "top-right" });
-         setFormData({patient_username:"",patient_password:""}) 
-        // Store token in localStorage if authentication is successful
-        localStorage.setItem("token", data.token);
-        setFormData({ patient_username: "", patient_password: "" });
-      } else {
-        toast.error(data.message || "Login failed!", { position: "top-right" });
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      toast.error("Something went wrong!", { position: "top-right" });
     }
   };
-  
 
   return (
     <>
@@ -64,11 +32,11 @@ const Login = () => {
           <div className="mb-4 flex items-center bg-white shadow rounded-lg border border-[#66D2CE] p-2">
             <User className="text-[#66D2CE] w-5 h-5 mx-2" />
             <input
-              name="patient_username"
+              name="username"
               type="text"
-              placeholder="email"
+              placeholder="Username"
               onChange={handleChange}
-              value={formData.patient_username}
+              value={formData.username}
               className="w-full p-2 focus:outline-none"
             />
           </div>
@@ -76,11 +44,11 @@ const Login = () => {
           <div className="mb-4 flex items-center bg-white shadow rounded-lg border border-[#66D2CE] p-2">
             <Lock className="text-[#66D2CE] w-5 h-5 mx-2" />
             <input
-              name="patient_password"
+              name="password"
               type="password"
               placeholder="Password"
               onChange={handleChange}
-              value={formData.patient_password}
+              value={formData.password}
               className="w-full p-2 focus:outline-none"
             />
           </div>
@@ -96,4 +64,4 @@ const Login = () => {
   );
 };
 
-export default PatientLogin;
+export default Login;
