@@ -2,7 +2,7 @@
 
 A modern React project template with a clean and scalable architecture.
 
-## Project Structure
+## Frontend Project Structure
 
 ```
 src/
@@ -16,6 +16,26 @@ src/
 ├── services/      # API calls and external services
 ├── styles/        # Global styles and CSS modules
 └── utils/         # Helper functions and utilities
+```
+## Backend Project Structure
+
+```
+backend/
+├── src/
+│   ├── config/          # Configuration files (DB, environment variables)
+│   ├── controllers/     # Request handlers (business logic)
+│   ├── middleware/      # Middleware (auth, error handling, etc.)
+│   ├── models/         # Mongoose models (database schema)
+│   ├── routes/         # API routes (Express routers)
+│   ├── services/       # External services (Cloudinary, email, payment)
+│   ├── utils/          # Utility functions/helpers
+│   ├── app.js         # Express app setup
+│   ├── server.js      # Entry point (starts the server)
+│   ├── .env           # Environment variables (API keys, DB URI)
+├── package.json      # Dependencies & scripts
+├── .gitignore        # Files to ignore in Git
+└── README.md         # Project documentation
+
 ```
 
 ## Getting Started
